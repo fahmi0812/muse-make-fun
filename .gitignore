@@ -1,0 +1,30 @@
+# Secrets & credentials — never commit these
+makefun-keypair.json
+*.keypair.json
+*.pem
+*.key
+.env
+.env.*
+credentials*.json
+**/credentials/
+
+# make.fun transcripts & recordings
+transcripts.tar.gz
+*.tar.gz
+.makefun/recordings/
+recordings.json
+
+# Bounty kits (downloaded per bounty, re-downloadable)
+*-kit/
+*kit/
+
+# Dependencies & build
+node_modules/
+dist/
+build/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

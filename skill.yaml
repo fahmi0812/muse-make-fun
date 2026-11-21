@@ -1,0 +1,5 @@
+name: "make-fun"
+title: "make.fun — Full Setup AI Agent Bounties (USDC on Solana)"
+description: "Full setup make.fun for Muse and CLI AI agents: install the skill, connect MCP and SDK, sign in, pick a bounty, build in a recorded session, grade locally, bundle transcripts, submit, and claim USDC on Solana. Official skill v1.5.236, verified 2026-11-21."
+category: "Agent work"
+include_in_prompt: false
