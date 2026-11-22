@@ -119,4 +119,4 @@ Pola yang terbukti dari `keybot111/hire-your-first-ai-agent`: 1 orang, 1 agent, 
 
 Kalau satu kotak tidak tercentang, pilih bounty lain.
 
-Sumber: `references/skill-upstream-v1.5.253.md`, `keybot111/hire-your-first-ai-agent`.
+Sumber: `references/skill-upstream-v1.5.259.md`, `keybot111/hire-your-first-ai-agent`.

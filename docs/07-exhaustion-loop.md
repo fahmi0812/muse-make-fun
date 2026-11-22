@@ -139,7 +139,11 @@ iterasi tanpa baris ini; tidak ada keputusan tanpa membaca file ini.
 
 Aturan:
 
-- `sizeBytes` SELALU dihitung CLI: `(mainBytes + 7) + (ownerJson ? 76 : 0)`.
+- `sizeBytes` SELALU dihitung CLI: `(mainBytes + entryPathBytes) + (ownerJson ? ownerJsonBytes : 0)`.
+  Default `entryPathBytes` = 7 (path `main.ts`) dan `ownerJsonBytes` = 76.
+  Dua angka ini dari SATU bounty (Sokoban, entry `main.ts`). Untuk bounty lain,
+  hitung dari RULES.txt bounty itu dan set field `entryPathBytes` /
+  `ownerJsonBytes` di variant JSON.
   Angka yang sudah diperbaiki: main.ts 491 B → **498** (tanpa owner.json) /
   **574** (dengan owner.json) — klaim lama "422 B" adalah bug pengurangan
   ganda. 540 B → **547** / **623** (bukan 617).
@@ -147,11 +151,13 @@ Aturan:
   terminal (skor dulu, lalu tie-break) DAN lolos harness penuh.
 - Varian yang ditolak harus punya alasan berbasis angka (wall/RSS/skor),
   bukan hipotesis.
-- Cutoff live di-poll berkala (`mf.mjs poll <slug>`) dan dicatat sebagai
+- Cutoff live di-poll berkala (`mf.mjs poll <slug> --places <n>`) dan dicatat sebagai
   baris tipe `cutoff`; kecepatan cutoff (B/jam) dihitung dari dua poll terakhir.
+  `--places` = jumlah tempat berhadiah di bounty itu (default 10). Cutoff =
+  entry di tempat ke-n, dibatasi panjang leaderboard.
 
 ```bash
-node tools/mf.mjs poll sokoban-solver-01-run-20261121
+node tools/mf.mjs poll sokoban-solver-01-run-20261121 --places 10
 node tools/mf.mjs track sokoban-solver-01-run-20261121 '{"score":1000000,"mainBytes":540,"ownerJson":false,"variant":"c21-hybrid","strategyClass":"algorithmic-rewrite","wallS":29.4,"rssMb":351}'
 ```
 
@@ -168,7 +174,9 @@ Submit hanya bila SEMUA ini benar (exit 0 = PASS, 1 = FAIL + alasan):
 2. Worst-case wall ≤ **20 dtk** sekuensial pada set terberat (3× headroom
    terhadap batas 60 dtk server) dan RSS ≤ **350 MB**. Angka ini diperketat
    dari pegangan lama (≤ 30 dtk / 400 MB) untuk margin anti-overfitting
-   terhadap set drand yang belum diketahui.
+   terhadap set drand yang belum diketahui. 20 dtk / 350 MB adalah default
+   dari SATU bounty. Untuk bounty lain, set `wallMaxS` / `rssMaxMb` di
+   variant JSON sesuai batas di RULES.txt bounty itu (sisakan headroom).
 3. LICENSE byte-identik dengan starter (bandingkan hash bila path starter
    diberikan; bila tidak, gate memberi warning dan lanjut).
 4. Secret scan lolos: tidak ada pola keypair/API key di file entry
@@ -308,7 +316,8 @@ benchmark offline di kit lokal:
 ```bash
 node tools/mf.mjs --help
 node tools/mf.mjs research <slug> [--fill @file.json]
-node tools/mf.mjs poll <slug>
+node tools/mf.mjs list [--all] [--json]
+node tools/mf.mjs poll <slug> [--places <n>]
 node tools/mf.mjs track <slug> '<variant-json>'
 node tools/mf.mjs gate <slug> '<variant-json>' --starter <starter-LICENSE> --quota <quota.json>
 node tools/mf.mjs loop <slug> <config.json>

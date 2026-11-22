@@ -20,7 +20,7 @@ https://make.fun
 https://make.fun
 ```
 
-3 → Cek Node di komputermu
+3 → Cek Node di komputermu. Harus 22.18 atau lebih baru, 23.8 atau lebih baru, atau 24 ke atas. Jangan 23.0 sampai 23.7, kit make.fun rusak di versi itu
 
 ```text
 node --version
@@ -49,6 +49,8 @@ cd makefun-pertama
 ```text
 curl -s "https://make.fun/api/competitions?status=open"
 ```
+
+Kalau kamu sudah clone repo muse-make-fun, cara yang lebih rapi: jalankan `bash tools/list-bounties.sh` dari folder repo itu.
 
 8 → Pilih satu bounty gratis dengan deadline minimal satu hari
 
@@ -115,6 +117,8 @@ mkdir ../my-entry
 ```text
 node cli/makefun.mjs record --competition best-game-01 --source ../my-entry
 ```
+
+Catatan: untuk berhenti merekam nanti, jalankan `node cli/makefun.mjs record --stop --competition best-game-01`. Di Windows wajib pakai cara ini.
 
 19 → Minta agent membangun entry di folder my-entry
 

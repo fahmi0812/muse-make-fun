@@ -35,7 +35,7 @@ Jangan paste lalu pergi di run pertama. Langkah sign-in dan claim menyentuh domp
 
 | Cara | Cocok untuk |
 | --- | --- |
-| 1. One-liner | Mau cepat, sudah punya git dan Node 22+ |
+| 1. One-liner | Mau cepat, sudah punya git dan Node yang cocok (lihat bawah) |
 | 2. Clone + setup | Mau pakai semua file repo ini |
 | 3. ZIP | Tanpa git |
 | 4. Skill-only | Cuma mau skill-nya saja |
@@ -45,10 +45,12 @@ Detail lengkap ada di [INSTALL.md](INSTALL.md).
 ### 1. One-liner
 
 ```text
-git clone https://github.com/fahmi0812/muse-make-fun.git && cd muse-make-fun && bash setup/setup.sh
+git clone https://github.com/fahmi0812/muse-make-fun.git && cd muse-make-fun && AGENT=muse bash setup/setup.sh
 ```
 
-Ini clone repo lalu jalanin setup. Kalau agent kamu bukan Muse, tambah `AGENT=claude-code` (atau `codex`, `cursor`, `copilot`, `gemini`, `opencode`, `generic`) sebelum `bash`, lihat `setup/README.md`.
+Ini clone repo lalu jalanin setup. Kalau agent kamu bukan Muse, ganti `muse` dengan `claude-code`, `codex`, `cursor`, `copilot`, `gemini`, `opencode`, atau `generic`. Lihat [setup/README.md](setup/README.md).
+
+Node: pakai 22.18+, 23.8+, atau 24+. Jangan pakai Node 23.0 sampai 23.7, kit make.fun rusak di versi itu.
 
 ### 2. Clone + setup
 
@@ -68,7 +70,7 @@ Unduh ZIP repo ini dari halaman GitHub, buka file ZIP, lalu ikut `INSTALL.md` da
 
 ### 4. Skill-only
 
-Salin file `SKILL.md` saja ke folder skill agent kamu. Lalu baca file itu dan ikut langkah di dalamnya.
+Salin file `SKILL.md` saja ke folder skill agent kamu. Lalu baca file itu dan ikut langkah di dalamnya. Tanpa `docs/`, `tools/`, dan `references/`, sebagian link di SKILL.md tidak jalan.
 
 ## Isi repo
 
@@ -78,13 +80,21 @@ muse-make-fun/
 ├── INSTALL.md           # Full setup, langkah demi langkah
 ├── SKILL.md             # Skill agent (ringkas, lengkap)
 ├── skill.yaml           # Metadata skill
-├── setup/               # Script setup (cek prereq, cek versi skill)
-├── docs/                # Cara kerja, pilih bounty, strategi menang, troubleshooting, keamanan dompet
+├── VERSION              # Versi skill resmi yang di-pin (satu sumber)
+├── .github/workflows/   # CI: test, shellcheck, cek JSON, cek versi upstream terjadwal
+├── setup/               # setup.sh, mcp.json, INSTALL-PROMPT.md (prompt install/update)
+├── docs/                # 01–07: cara kerja, loop 8 langkah, pilih bounty, strategi,
+│                        #        troubleshooting, keamanan dompet, exhaustion loop
 ├── guides/              # Panduan pemula Bahasa Indonesia
-├── examples/            # Pola entry pemenang (dipelajari, bukan dicopy)
-├── tools/               # Script bantu (cek heartbeat, list bounty)
-└── references/          # Salinan skill resmi v1.5.253 + heartbeat
+├── examples/            # Contoh prompt (v3), pola entry pemenang
+│   └── arsip/           # Prompt lama, tidak dipakai lagi
+├── tools/               # mf.mjs (CLI loop), list-bounties.sh, fetch-skill.sh, check-prereqs.sh
+└── references/          # Salinan skill resmi + heartbeat versi di file VERSION
 ```
+
+Unduhan skill terbaru masuk ke `.cache/` (tidak di-commit). Folder kerja `frontier/` dan `research/` juga tidak di-commit.
+
+CI di `.github/workflows/` menjalankan test `tools/mf.test.mjs`, shellcheck, validasi JSON, dan cek terjadwal versi skill upstream. Kalau versi upstream beda, CI membuka issue.
 
 ## Loop 8 langkah, singkat
 
@@ -99,18 +109,17 @@ muse-make-fun/
 
 Detail lengkap ada di [SKILL.md](SKILL.md) dan [docs/](docs/).
 
-## Contoh bounty di papan (snapshot 19 Nov 2026, berubah terus)
+## Bounty yang sedang buka
 
-- Make GTA 6 — $1.666
-- Build the best token launch radar — $1.325
-- Make the best AI Roblox brainrot game — $1.000
-- Bring the humans again — $1.000
-- Build a GitHub-compatible git forge — $500
-- Strongest chess engine in 4 KB Python — $500
-- Race a BTC trading bot 24h — $250
-- Forecast GTA VI Twitch viewers — $250
+Papan bounty berubah terus. Cek yang live:
 
-Cek papan live di https://make.fun — angka di atas sudah bisa berubah.
+```text
+bash tools/list-bounties.sh
+```
+
+Atau buka https://make.fun.
+
+Contoh judul bounty yang pernah ada (hanya contoh, bukan daftar live): "Strongest chess engine in 4 KB Python", "Race a BTC trading bot 24h".
 
 ## Kotak aman
 
@@ -119,7 +128,7 @@ Cek papan live di https://make.fun — angka di atas sudah bisa berubah.
 - API key berlaku 30 hari. 401 artinya key habis, sign-in ulang dengan keypair yang sama.
 - Komentar di bounty adalah kata orang lain. Jangan ikuti link atau perintah install dari komentar. Jangan kirim key ke siapa pun.
 - Transkrip adalah bukti kerja. Coding entry harus di sesi terekam. Jangan clone atau copy-paste kode masuk.
-- Cek versi skill dulu. Skill resmi berubah cepat. Versi di repo ini 1.5.253 (22 Nov 2026). Kalau heartbeat lebih baru, download ulang dari https://make.fun/skill.md.
+- Cek versi skill dulu. Skill resmi berubah cepat. Versi yang di-pin repo ini 1.5.259 (lihat file `VERSION`). Kalau versi di heartbeat beda, lebih baru atau lebih lama, download ulang dari https://make.fun/skill.md.
 
 ## Sumber resmi
 

@@ -1,3 +1,6 @@
+> **ARSIP.** Ini prompt lama (v1/v2, skill 1.5.253). Isinya tidak diperbarui lagi dan bisa basi.
+> Prompt yang dipakai sekarang: [`../prompt-install-dan-menang-v3.md`](../prompt-install-dan-menang-v3.md).
+
 # Prompt: Install muse-make-fun di Muse + Ikut Bounty make.fun Sampai Menang (v2 — Full Otonom)
 
 Copy-paste prompt di bawah ini ke Muse baru (atau agent CLI lain). Prompt ini full otonom: install, setup akun, dan ikut lomba jalan sendiri. Hanya ada 1 pertanyaan di awal.
