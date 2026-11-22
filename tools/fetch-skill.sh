@@ -5,7 +5,7 @@
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PINNED="$REPO_DIR/references/skill-upstream-v1.5.236.md"
+PINNED="$REPO_DIR/references/skill-upstream-v1.5.253.md"
 LATEST="$REPO_DIR/references/skill-upstream-latest.md"
 HEARTBEAT="$REPO_DIR/references/heartbeat-latest.md"
 
@@ -45,6 +45,6 @@ if [ "$latest_version" = "$(pinned_version)" ]; then
   echo "SAME: latest ($latest_version) == pinned ($(pinned_version)). No update needed."
 else
   echo "NEWER: latest ($latest_version) != pinned ($(pinned_version))."
-  echo "Review the diff, then update references/skill-upstream-v1.5.236.md"
+  echo "Review the diff, then update references/skill-upstream-v1.5.253.md"
   echo "and the version noted in SKILL.md / README.md."
 fi

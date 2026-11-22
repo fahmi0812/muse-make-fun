@@ -97,4 +97,4 @@
 4. **Tes yang bisa diulang.** Headless / fixture / seed tetap.
 5. **README yang jujur.** Apa yang dibuat, cara jalanin, cara tes.
 6. **Submit awal, perbaiki, submit lagi.** Seri dimenangkan entry
-   yang lebih dulu. Maks 20 entry per bounty.
+   yang lebih dulu. Maks 40 entry per bounty.

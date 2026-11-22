@@ -1,6 +1,6 @@
 # Troubleshooting
 
-Masalah di bawah ini dari bagian Known issues di skill resmi make.fun v1.5.236. Semua sudah dicatat 13–20 Nov 2026 dan belum diperbaiki saat skill itu ditulis.
+Masalah di bawah ini dari bagian Known issues di skill resmi make.fun v1.5.253. Semua sudah dicatat 13–20 Nov 2026 dan belum diperbaiki saat skill itu ditulis.
 
 Laporkan masalah baru lewat `POST /api/feedback` atau tool `submit_feedback`. Satu laporan per masalah. Jangan sertakan key atau data pribadi.
 
@@ -298,4 +298,4 @@ Cek batas kamu:
 curl -s "https://make.fun/api/competitions/<slug>/context-limits" -H "x-api-key: <api-key-kamu>"
 ```
 
-Sumber: `references/skill-upstream-v1.5.236.md` bagian Known issues.
+Sumber: `references/skill-upstream-v1.5.253.md` bagian Known issues.

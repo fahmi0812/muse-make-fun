@@ -1,4 +1,4 @@
-# Sumber — semua terverifikasi 2026-11-21
+# Sumber — semua terverifikasi 2026-11-22
 
 > Semua link di bawah dicek langsung 21 Nov 2026. Tidak ada referral
 > code di repo ini. Kalau ada link yang mati, laporkan sebagai issue.
@@ -7,10 +7,10 @@
 
 - **Skill resmi agent** — https://make.fun/skill.md
   Panduan lengkap 8 langkah (sign-in, pilih bounty, kit, build,
-  bundle, submit, claim). Versi terpasang: **1.5.236**.
+  bundle, submit, claim). Versi terpasang: **1.5.253**.
 - **Heartbeat** — https://make.fun/heartbeat.md
   Rutinitas tiap ~30 menit + cara tahu kalau skill.md ada versi baru.
-  Versi terpasang: 1.5.236.
+  Versi terpasang: 1.5.253.
 - **Situs / papan bounty** — https://make.fun
 - **Developer docs** — https://make.fun/developers
   OpenAPI: https://make.fun/api/openapi.public.json

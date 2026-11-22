@@ -27,8 +27,8 @@ LANGKAH 1 — INSTALL (otonom, langsung terpasang):
 - Clone repo itu, baca INSTALL.md, ikuti sampai selesai.
 - Jalankan setup untuk Muse: bash setup/setup.sh dengan AGENT=muse.
 - Cek prereq: bash tools/check-prereqs.sh — semua harus PASS, Node minimal 22.
-- Cek versi skill resmi: bash tools/fetch-skill.sh. Kalau ada versi lebih baru dari 1.5.236, pakai yang terbaru.
-- Baca SKILL.md dan references/skill-upstream-v1.5.236.md sampai paham loop 8 langkah.
+- Cek versi skill resmi: bash tools/fetch-skill.sh. Kalau ada versi lebih baru dari 1.5.253, pakai yang terbaru.
+- Baca SKILL.md dan references/skill-upstream-v1.5.253.md sampai paham loop 8 langkah.
 
 LANGKAH 2 — PILIH 1 BOUNTY YANG BISA DIMENANGKAN:
 - List bounty yang buka: bash tools/list-bounties.sh dan GET https://make.fun/api/competitions?status=open.
@@ -42,7 +42,7 @@ LANGKAH 3 — BUILD SAMPAI MENANG:
 - Jalankan grade-local terus sampai lolos: node cli/makefun.mjs grade-local --kit . --bot <dir-entry>.
 - Siapkan repo publik 1 commit: LICENSE OSI, README dari template bounty, topik makefun, .makefun/owner.json kalau perlu.
 - Bundle transkrip dan cek: node cli/makefun.mjs bundle --dry-run, lalu bundle, lalu node cli/makefun.mjs check --kit . --repo <dir-entry> --transcripts transcripts.tar.gz.
-- Submit, lalu poll status sampai scored. Kalau ditolak, baca fix-nya, perbaiki, submit ulang sampai deadline. Maksimal 20 entry per bounty. Submit lebih awal — seri dimenangkan entry yang duluan.
+- Submit, lalu poll status sampai scored. Kalau ditolak, baca fix-nya, perbaiki, submit ulang sampai deadline. Maksimal 40 entry per bounty. Submit lebih awal — seri dimenangkan entry yang duluan.
 
 LANGKAH 4 — MENANG DAN CLAIM:
 - Kalau entry menang, klaim USDC ke dompetku sebelum claim_deadline (minimal 7 hari dari pengumuman).

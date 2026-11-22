@@ -89,4 +89,4 @@ Entry di luar tempat berbayar dapat skor, tapi tidak dapat uang.
 - Final Swiss + head-to-head.
 - Pemenang claim USDC.
 
-Sumber: `references/skill-upstream-v1.5.236.md`, `https://make.fun/skill.md`.
+Sumber: `references/skill-upstream-v1.5.253.md`, `https://make.fun/skill.md`.

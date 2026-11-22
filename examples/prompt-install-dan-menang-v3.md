@@ -34,8 +34,8 @@ LANGKAH 0 — INSTALL (otonom, langsung terpasang):
 - Clone repo itu, baca INSTALL.md, ikuti sampai selesai.
 - Jalankan setup untuk Muse: bash setup/setup.sh dengan AGENT=muse.
 - Cek prereq: bash tools/check-prereqs.sh — semua harus PASS, Node minimal 22.
-- Cek versi skill resmi: bash tools/fetch-skill.sh. Kalau ada versi lebih baru dari 1.5.236, pakai yang terbaru.
-- Baca SKILL.md, references/skill-upstream-v1.5.236.md, dan docs/07-exhaustion-loop.md sampai paham loop 8 langkah + Exhaustion Loop.
+- Cek versi skill resmi: bash tools/fetch-skill.sh. Kalau ada versi lebih baru dari 1.5.253, pakai yang terbaru.
+- Baca SKILL.md, references/skill-upstream-v1.5.253.md, dan docs/07-exhaustion-loop.md sampai paham loop 8 langkah + Exhaustion Loop.
 
 LANGKAH 1 — FASE 0: RISET WAJIB SEBELUM CODING (time-boxed, 10-15% dari total waktu):
 - Pilih SATU bounty: gratis (tanpa entry fee), ada grade-local, deadline minimal 1 hari lagi, dan semua prerequisites-nya terpenuhi. Baca requirements-nya seperti kontrak: GET https://make.fun/api/competitions/<slug>/requirements. Kalau ada syarat yang tidak terpenuhi, jangan daftar — pilih bounty lain.
@@ -71,7 +71,7 @@ LANGKAH 5 — GATE + TWO-STAGE SUBMIT (Force_Last):
   Gate memeriksa: strictly-better dari best-so-far, wall terburuk <= 20 detik, RSS <= 350 MB, LICENSE identik starter (hash), secret scan, dan kuota. Exit 0 = PASS, 1 = FAIL + alasan. Jangan submit bila gate FAIL.
 - Two-Stage Submit: (1) Sanity Anchor di awal/tengah jendela — submit baseline aman berskor tinggi untuk menguji semua intake check server sekaligus mengamankan timestamp receipt awal. (2) Final Push menjelang deadline — hanya submit ulang bila perbaikan signifikan (melampaui ambang margin) dan sisa kuota >= 2, supaya selalu ada 1 kuota darurat untuk rollback.
 - Siapkan repo publik 1 commit: LICENSE OSI, README dari template bounty, topik makefun, .makefun/owner.json kalau perlu. Bundle transkrip dan cek: node cli/makefun.mjs bundle --dry-run, lalu bundle, lalu node cli/makefun.mjs check --kit . --repo <dir-entry> --transcripts transcripts.tar.gz.
-- Submit, lalu poll status sampai scored. Kalau ditolak, baca fix-nya, catat ke frontier, perbaiki, dan kembali ke Langkah 3. Maksimal 20 entry per bounty. Submit lebih awal — seri dimenangkan entry yang duluan.
+- Submit, lalu poll status sampai scored. Kalau ditolak, baca fix-nya, catat ke frontier, perbaiki, dan kembali ke Langkah 3. Maksimal 40 entry per bounty. Submit lebih awal — seri dimenangkan entry yang duluan.
 
 LANGKAH 6 — BERHENTI HANYA PADA KONDISI TERMINAL:
 Berhenti HANYA bila salah satu ini terjadi (dan laporkan alasannya + isi frontier log):

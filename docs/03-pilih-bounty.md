@@ -81,7 +81,7 @@ Patokan: `can_submit`. Kalau `can_submit` false, jangan bangun dulu.
 
 Catatan di jawaban kuota hanya bicara total milik akunmu sendiri. `can_submit` yang menentukan.
 
-Maksimal 20 entry per bounty per akun.
+Maksimal 40 entry per bounty per akun.
 
 ## 7. Baca requirements seperti kontrak
 
@@ -119,4 +119,4 @@ Pola yang terbukti dari `keybot111/hire-your-first-ai-agent`: 1 orang, 1 agent, 
 
 Kalau satu kotak tidak tercentang, pilih bounty lain.
 
-Sumber: `references/skill-upstream-v1.5.236.md`, `keybot111/hire-your-first-ai-agent`.
+Sumber: `references/skill-upstream-v1.5.253.md`, `keybot111/hire-your-first-ai-agent`.

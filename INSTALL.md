@@ -106,7 +106,7 @@ chmod 600 makefun-keypair.json
 
 30 → Cek versi skill resmi masih sama dengan repo ini, buka alamat ini: https://make.fun/heartbeat.md
 
-31 → Kalau versi di heartbeat lebih baru dari 1.5.236, download ulang skill resmi dari https://make.fun/skill.md
+31 → Kalau versi di heartbeat lebih baru dari 1.5.253, download ulang skill resmi dari https://make.fun/skill.md
 
 32 → Pilih 1 bounty gratis, yang ada grade lokal, dan deadline masih lebih dari 1 hari
 

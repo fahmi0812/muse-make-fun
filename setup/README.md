@@ -108,5 +108,5 @@ AGENT=muse ./setup/setup.sh
 ```
 
 Cek versi skill resmi dulu di `https://make.fun/heartbeat.md` —
-kalau versinya lebih baru dari `references/skill-upstream-v1.5.236.md`,
+kalau versinya lebih baru dari `references/skill-upstream-v1.5.253.md`,
 fetch ulang sebelum ikut bounty.

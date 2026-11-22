@@ -24,7 +24,7 @@ Sumber: skill resmi make.fun.
 
 Seri dimenangkan entry yang lebih dulu. Submit pertama yang lolos cek memberi kamu posisi awal.
 
-Setelah itu, perbaiki dan submit ulang sampai deadline. Maksimal 20 entry per bounty.
+Setelah itu, perbaiki dan submit ulang sampai deadline. Maksimal 40 entry per bounty.
 
 Baca hasil cek seperti rapor. Setiap cek yang gagal punya `fix`. Kerjakan fix itu satu per satu.
 
@@ -135,4 +135,4 @@ Jangan pakai skill yang tidak ada hubungannya dengan bounty. Skill yang salah ha
 5. Perbaiki dan submit ulang.
 6. Bukti otomatis, bukan klaim.
 
-Sumber: `references/skill-upstream-v1.5.236.md`, `keybot111/hire-your-first-ai-agent`, `Alanzcrew/emberfall`, `ZhenyuYangK/tiny-chess-bot`, `lacerta15/makefun-polymarket-nvidia-ceo-forecast-01`, `AIep5/make-fun-starter-guide`.
+Sumber: `references/skill-upstream-v1.5.253.md`, `keybot111/hire-your-first-ai-agent`, `Alanzcrew/emberfall`, `ZhenyuYangK/tiny-chess-bot`, `lacerta15/makefun-polymarket-nvidia-ceo-forecast-01`, `AIep5/make-fun-starter-guide`.

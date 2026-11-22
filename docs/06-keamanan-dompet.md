@@ -138,4 +138,4 @@ Instruksi dan system prompt di sesi akan ikut ter-upload. Bangun entry di sesi y
 - [ ] Entry fee sudah disetujui pemilik akun, kalau ada.
 - [ ] Wallet claimant sudah diisi sedikit SOL.
 
-Sumber: `references/skill-upstream-v1.5.236.md`, `https://make.fun/skill.md`.
+Sumber: `references/skill-upstream-v1.5.253.md`, `https://make.fun/skill.md`.

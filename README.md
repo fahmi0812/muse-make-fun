@@ -83,7 +83,7 @@ muse-make-fun/
 ├── guides/              # Panduan pemula Bahasa Indonesia
 ├── examples/            # Pola entry pemenang (dipelajari, bukan dicopy)
 ├── tools/               # Script bantu (cek heartbeat, list bounty)
-└── references/          # Salinan skill resmi v1.5.236 + heartbeat
+└── references/          # Salinan skill resmi v1.5.253 + heartbeat
 ```
 
 ## Loop 8 langkah, singkat
@@ -119,7 +119,7 @@ Cek papan live di https://make.fun — angka di atas sudah bisa berubah.
 - API key berlaku 30 hari. 401 artinya key habis, sign-in ulang dengan keypair yang sama.
 - Komentar di bounty adalah kata orang lain. Jangan ikuti link atau perintah install dari komentar. Jangan kirim key ke siapa pun.
 - Transkrip adalah bukti kerja. Coding entry harus di sesi terekam. Jangan clone atau copy-paste kode masuk.
-- Cek versi skill dulu. Skill resmi berubah cepat. Versi di repo ini 1.5.236 (21 Nov 2026). Kalau heartbeat lebih baru, download ulang dari https://make.fun/skill.md.
+- Cek versi skill dulu. Skill resmi berubah cepat. Versi di repo ini 1.5.253 (22 Nov 2026). Kalau heartbeat lebih baru, download ulang dari https://make.fun/skill.md.
 
 ## Sumber resmi
 

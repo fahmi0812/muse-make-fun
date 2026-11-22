@@ -21,7 +21,7 @@ B — SUDAH INSTALL (update total):
 1. cd ke folder clone repo (kalau tidak ketemu, ke A langkah 3)
 2. git pull origin main (pakai bentuk eksplisit ini, jangan git pull polos — gagal di detached HEAD)
 3. AGENT=muse bash setup/setup.sh (setup.sh idempotent, aman diulang)
-4. grep -m1 '^version:' references/skill-upstream-latest.md — bandingkan dengan pinned v1.5.236; kalau lebih baru, laporkan wrapper mungkin basi, jangan edit otomatis.
+4. grep -m1 '^version:' references/skill-upstream-latest.md — bandingkan dengan pinned v1.5.253; kalau lebih baru, laporkan wrapper mungkin basi, jangan edit otomatis.
 5. Verifikasi (lihat bawah).
 
 VERIFIKASI (wajib, jangan klaim selesai tanpa ini): node --version 22+; SKILL.md ada di folder skill; node --test tools/mf.test.mjs = 39 pass 0 fail; python3 -m json.tool setup/mcp.json valid; setup.sh mencetak "== Done ==". Laporkan angka aslinya.
@@ -31,7 +31,7 @@ HALANGAN (kalau ketemu, jangan berhenti — lakukan solusinya, lanjut):
 2. git push gagal (no credentials): install tidak butuh push — abaikan, lanjut.
 3. setup.sh FAIL karena node/git/curl hilang: install dulu, jalankan ulang setup.sh.
 4. Download skill.md resmi gagal: tidak fatal, salinan references tetap bisa dipakai; coba lagi nanti pakai tools/fetch-skill.sh.
-5. WARNING versi terbaru beda dari pinned v1.5.236: hanya peringatan, jangan edit otomatis, laporkan.
+5. WARNING versi terbaru beda dari pinned v1.5.253: hanya peringatan, jangan edit otomatis, laporkan.
 6. Node 23.0–23.7 rusak untuk kit make.fun (createZstdCompress hilang): pakai Node 22.18+, 23.8+, atau 24+.
 7. Satu file tidak bisa ditulis shell: simpan dulu (staging), laporkan, lanjutkan langkah lain.
 8. mcp.json sudah terisi (487 byte, valid): jangan ditimpa, cukup verifikasi.
@@ -42,6 +42,6 @@ BATASAN: prompt ini HANYA install/update. Setelah verifikasi hijau, BERHENTI —
 
 ## Catatan
 
-- Versi skill resmi yang di-pin repo ini: **v1.5.236**.
+- Versi skill resmi yang di-pin repo ini: **v1.5.253**.
 - Prompt install-dan-menang (install + ikut bounty) adalah file terpisah:
   `examples/prompt-install-dan-menang-v3.md`. Jangan campur keduanya.
