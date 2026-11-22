@@ -3,13 +3,18 @@
  * tools/mf.mjs — muse-make-fun unified CLI (Exhaustion Loop v2)
  *
  * ONE Node 22 ESM stdlib-only CLI. No npm install, no Python.
- * Subcommands: research | poll | track | gate | loop
+ * Subcommands: list | research | poll | track | gate | loop
  *
  * Design rules (from solusi-final-terverifikasi, 22 Nov 2026):
- * - size_bytes is NEVER hand-computed: sizeBytes(mainBytes, ownerJson)
- *   = (mainBytes + 7) + (ownerJson ? 76 : 0).
- *   Corrected numbers: 491 B main.ts -> 498 (no owner.json) / 574 (with);
- *   540 B -> 547 / 623. The old "422 B" claim was a double-subtraction bug.
+ * - size_bytes is NEVER hand-computed: sizeBytes(mainBytes, ownerJson, opts)
+ *   = (mainBytes + entryPathBytes) + (ownerJson ? ownerJsonBytes : 0).
+ *   The defaults DEFAULT_ENTRY_PATH_BYTES = 7 (byte length of the entrypoint
+ *   path "main.ts") and DEFAULT_OWNER_JSON_BYTES = 76 come from ONE
+ *   size-coded bounty (entrypoint main.ts). They MUST be overridden per
+ *   bounty via the variant fields entryPathBytes / ownerJsonBytes.
+ *   Corrected numbers for that bounty: 491 B main.ts -> 498 (no owner.json)
+ *   / 574 (with); 540 B -> 547 / 623. The old "422 B" claim was a
+ *   double-subtraction bug.
  * - Terminal condition (corrected, non-strict because an exact tie loses
  *   to the earlier receipt):
  *   minimisation: unreachable when best - maxRemainingGain >= cutoff - margin
@@ -18,7 +23,8 @@
  * - Token ROI cap: max_token_cost_usd <= 0.15 * prize_target_usd,
  *   except in explicit mode "rd" (research / dogfood).
  * - Gate: strictly-better than best-so-far (a tie is NOT better),
- *   worst-case wall <= 20 s, RSS <= 350 MB, LICENSE byte-identical to
+ *   worst-case wall <= 20 s, RSS <= 350 MB (overridable per variant via
+ *   wallMaxS / rssMaxMb), LICENSE byte-identical to
  *   starter (hash compare), secret scan, quota check.
  * - loop only orchestrates state; it NEVER runs LLM calls.
  *
@@ -34,19 +40,86 @@ export const VERSION = '1.0.0';
 export const WALL_MAX_S = 20;
 export const RSS_MAX_MB = 350;
 export const ROI_CAP_FRACTION = 0.15;
-export const LICENSE_PATH_BYTES = 7; // "main.ts" path bytes in size_bytes
-export const OWNER_JSON_BYTES = 76; // 57 B file + 19 B path
+// Defaults from ONE size-coded bounty (entrypoint "main.ts"). Override per
+// bounty via the variant fields entryPathBytes / ownerJsonBytes.
+export const DEFAULT_ENTRY_PATH_BYTES = 7; // byte length of the entrypoint path "main.ts"
+export const DEFAULT_OWNER_JSON_BYTES = 76; // 57 B file + 19 B path (that bounty only)
+export const DEFAULT_PLACES = 10;
+export const COMPETITIONS_URL = 'https://make.fun/api/competitions';
+export const LIST_MAX_PAGES = 20;
 
 // ---------------------------------------------------------------------------
 // Pure functions (exported for unit tests)
 // ---------------------------------------------------------------------------
 
-/** size_bytes = (mainBytes + 7) + (ownerJson ? 76 : 0). Never hand-compute. */
-export function sizeBytes(mainBytes, ownerJson) {
+/**
+ * size_bytes = (mainBytes + entryPathBytes) + (ownerJson ? ownerJsonBytes : 0).
+ * Never hand-compute. opts = { entryPathBytes, ownerJsonBytes } overrides the
+ * defaults (DEFAULT_ENTRY_PATH_BYTES / DEFAULT_OWNER_JSON_BYTES).
+ */
+export function sizeBytes(mainBytes, ownerJson, opts = {}) {
   if (!Number.isFinite(mainBytes) || mainBytes < 0) {
     throw new Error('sizeBytes: mainBytes must be a non-negative finite number');
   }
-  return (mainBytes + LICENSE_PATH_BYTES) + (ownerJson ? OWNER_JSON_BYTES : 0);
+  const entryPathBytes = opts.entryPathBytes ?? DEFAULT_ENTRY_PATH_BYTES;
+  const ownerJsonBytes = opts.ownerJsonBytes ?? DEFAULT_OWNER_JSON_BYTES;
+  if (!Number.isFinite(entryPathBytes) || entryPathBytes < 0) {
+    throw new Error('sizeBytes: entryPathBytes must be a non-negative finite number');
+  }
+  if (!Number.isFinite(ownerJsonBytes) || ownerJsonBytes < 0) {
+    throw new Error('sizeBytes: ownerJsonBytes must be a non-negative finite number');
+  }
+  return (mainBytes + entryPathBytes) + (ownerJson ? ownerJsonBytes : 0);
+}
+
+/** Pick the sizeBytes overrides present on a variant object. */
+export function sizeOptsFromVariant(v) {
+  const opts = {};
+  if (v && v.entryPathBytes !== undefined) opts.entryPathBytes = v.entryPathBytes;
+  if (v && v.ownerJsonBytes !== undefined) opts.ownerJsonBytes = v.ownerJsonBytes;
+  return opts;
+}
+
+/**
+ * Index of the cutoff entry in a leaderboard: place `places` (1-based),
+ * clamped to [0, length-1]. Returns -1 for an empty list.
+ */
+export function cutoffIndex(length, places = DEFAULT_PLACES) {
+  if (!Number.isFinite(length) || length <= 0) return -1;
+  const p = Number.isFinite(places) && places >= 1 ? Math.floor(places) : DEFAULT_PLACES;
+  return Math.min(p - 1, length - 1);
+}
+
+/** Extract { items, nextCursor } from one /api/competitions page. */
+export function extractCompetitionPage(data) {
+  if (Array.isArray(data)) return { items: data, nextCursor: null };
+  if (!data || typeof data !== 'object') return { items: [], nextCursor: null };
+  const items = [data.items, data.data, data.competitions].find(Array.isArray) ?? [];
+  const nc = data.next_cursor ?? data.nextCursor ?? null;
+  const nextCursor = nc === null || nc === undefined || nc === '' ? null : String(nc);
+  return { items, nextCursor };
+}
+
+/**
+ * Keep bounties whose deadline is not in the past relative to `now` (ms).
+ * Items with no (or unparseable) deadline are kept.
+ */
+export function filterOpenByDeadline(items, now = Date.now()) {
+  return (items || []).filter((c) => {
+    if (!c || c.deadline === undefined || c.deadline === null || c.deadline === '') return true;
+    const t = Date.parse(c.deadline);
+    if (!Number.isFinite(t)) return true;
+    return t >= now;
+  });
+}
+
+/** One output line per bounty. */
+export function formatBountyLine(c) {
+  const slug = c?.slug ?? '?';
+  const title = c?.title ?? '?';
+  const reward = c?.rewardAmount ?? c?.prize ?? c?.reward ?? '?';
+  const closes = c?.deadline ?? '?';
+  return `- ${slug} | ${title} | reward: ${reward} | closes: ${closes}`;
 }
 
 /**
@@ -133,10 +206,12 @@ export function validateVariant(variant, best) {
   if (!Number.isFinite(v.score)) reasons.push('missing or invalid number: score');
   if (v.wallS !== undefined && !Number.isFinite(v.wallS)) reasons.push('invalid number: wallS');
   if (v.rssMb !== undefined && !Number.isFinite(v.rssMb)) reasons.push('invalid number: rssMb');
+  if (v.entryPathBytes !== undefined && (!Number.isFinite(v.entryPathBytes) || v.entryPathBytes < 0)) reasons.push('invalid number: entryPathBytes');
+  if (v.ownerJsonBytes !== undefined && (!Number.isFinite(v.ownerJsonBytes) || v.ownerJsonBytes < 0)) reasons.push('invalid number: ownerJsonBytes');
   const ownerJson = v.ownerJson === true;
   let size = null;
   if (reasons.length === 0) {
-    size = sizeBytes(v.mainBytes, ownerJson);
+    size = sizeBytes(v.mainBytes, ownerJson, sizeOptsFromVariant(v));
     v.ownerJson = ownerJson;
     v.sizeBytes = size;
     if (best) {
@@ -370,9 +445,9 @@ function extractLeaderboard(data) {
   return null;
 }
 
-function cutoffFromEntries(entries) {
-  // Prefer the 10th place (paid-places boundary is usually 10); fall back to last.
-  const idx = Math.min(9, entries.length - 1);
+function cutoffFromEntries(entries, places = DEFAULT_PLACES) {
+  // Cutoff = last paid place (`places`, default 10), clamped to the list length.
+  const idx = cutoffIndex(entries.length, places);
   const e = entries[idx];
   const size = e.sizeBytes ?? e.size_bytes ?? e.size;
   const score = e.score ?? e.points;
@@ -393,13 +468,76 @@ async function fetchJson(url) {
     headers: { Accept: 'application/json' },
     signal: AbortSignal.timeout(15_000),
   });
-  if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
-  return res.json();
+  if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText} from ${url}`);
+  const text = await res.text();
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error(`response from ${url} was not JSON`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// list — open bounties (no API key needed)
+// ---------------------------------------------------------------------------
+
+/** Fetch all open competition pages, following next_cursor (max LIST_MAX_PAGES, stops on a repeated cursor). */
+export async function fetchOpenCompetitions(fetchPage = fetchJson) {
+  const all = [];
+  const seen = new Set();
+  let cursor = null;
+  for (let page = 0; page < LIST_MAX_PAGES; page++) {
+    const url = `${COMPETITIONS_URL}?status=open${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`;
+    const data = await fetchPage(url);
+    const { items, nextCursor } = extractCompetitionPage(data);
+    all.push(...items);
+    if (!nextCursor || seen.has(nextCursor)) break;
+    seen.add(nextCursor);
+    cursor = nextCursor;
+  }
+  return all;
+}
+
+async function cmdList(argv) {
+  let asJson = false;
+  let includeAll = false;
+  for (const a of argv) {
+    if (a === '--json') asJson = true;
+    else if (a === '--all') includeAll = true;
+    else return fail(`list: unknown option ${a}\nusage: mf.mjs list [--json] [--all]`);
+  }
+  let items;
+  try {
+    items = await fetchOpenCompetitions();
+  } catch (e) {
+    const why = e.name === 'TimeoutError' ? 'request timed out after 15s' : e.message;
+    console.error(`FAIL: could not list bounties from ${COMPETITIONS_URL}?status=open: ${why}`);
+    console.error('Try again later, or open https://make.fun in a browser.');
+    return 1;
+  }
+  const shown = includeAll ? items : filterOpenByDeadline(items, Date.now());
+  if (asJson) {
+    console.log(JSON.stringify(shown, null, 2));
+    return 0;
+  }
+  if (shown.length === 0) console.log('No open bounties found.');
+  for (const c of shown) console.log(formatBountyLine(c));
+  console.log(`\nTotal open: ${shown.length}`);
+  console.log('Read one bounty first: curl -s https://make.fun/api/competitions/<slug>/requirements');
+  return 0;
 }
 
 async function cmdPoll(root, argv) {
   const slug = argv[0];
-  if (!slug) return fail('usage: mf.mjs poll <slug>');
+  if (!slug || slug.startsWith('--')) return fail('usage: mf.mjs poll <slug> [--places <n>]');
+  let places = DEFAULT_PLACES;
+  for (let i = 1; i < argv.length; i++) {
+    if (argv[i] === '--places') {
+      const n = Number(argv[++i]);
+      if (!Number.isInteger(n) || n < 1) return fail('poll: --places must be a positive integer');
+      places = n;
+    }
+  }
   const base = `https://make.fun/api/competitions/${encodeURIComponent(slug)}`;
   let entries = null;
   let source = null;
@@ -417,7 +555,7 @@ async function cmdPoll(root, argv) {
     console.error('No numbers were recorded. Do not invent leaderboard figures — re-run poll when the API is reachable.');
     return 1;
   }
-  const cut = cutoffFromEntries(entries);
+  const cut = cutoffFromEntries(entries, places);
   if (cut.cutoff === null) {
     console.error(`poll FAILED for ${slug}: leaderboard entries expose neither size nor score at ${source}`);
     return 1;
@@ -434,6 +572,7 @@ async function cmdPoll(root, argv) {
     source,
     cutoff: cut.cutoff,
     cutoffMetric: cut.cutoffMetric,
+    places,
     entries: cut.entries,
     rank10Handle: cut.rank10Handle,
     top1Handle: cut.top1Handle,
@@ -475,6 +614,8 @@ function cmdTrack(root, argv) {
     score: v.variant.score,
     mainBytes: v.variant.mainBytes,
     ownerJson: v.variant.ownerJson,
+    entryPathBytes: v.variant.entryPathBytes ?? DEFAULT_ENTRY_PATH_BYTES,
+    ownerJsonBytes: v.variant.ownerJsonBytes ?? DEFAULT_OWNER_JSON_BYTES,
     sizeBytes: v.sizeBytes,
     wallS: v.variant.wallS ?? null,
     rssMb: v.variant.rssMb ?? null,
@@ -510,7 +651,7 @@ function cmdGate(root, argv) {
 
   // 1. strictly better than best-so-far (score first, then size tie-break; tie is NOT better)
   if (best) {
-    const size = Number.isFinite(variant.mainBytes) ? sizeBytes(variant.mainBytes, variant.ownerJson === true) : null;
+    const size = Number.isFinite(variant.mainBytes) ? sizeBytes(variant.mainBytes, variant.ownerJson === true, sizeOptsFromVariant(variant)) : null;
     const cand = { score: variant.score, sizeBytes: size };
     if (!isBetter(cand, best)) {
       reasons.push(`not strictly better than best-so-far (best: score ${best.score}, sizeBytes ${best.sizeBytes}; candidate: score ${cand.score}, sizeBytes ${cand.sizeBytes}) — a tie is NOT better`);
@@ -519,12 +660,16 @@ function cmdGate(root, argv) {
     warnings.push('no best-so-far recorded yet; strictly-better check skipped (first variant)');
   }
 
-  // 2. worst-case wall <= 20 s
-  if (!Number.isFinite(variant.wallS)) reasons.push('missing number: wallS (worst-case wall time required)');
-  else if (variant.wallS > WALL_MAX_S) reasons.push(`wall ${variant.wallS}s exceeds max ${WALL_MAX_S}s (3x headroom vs the 60s server budget)`);
-  // 3. RSS <= 350 MB
-  if (!Number.isFinite(variant.rssMb)) reasons.push('missing number: rssMb (worst-case RSS required)');
-  else if (variant.rssMb > RSS_MAX_MB) reasons.push(`RSS ${variant.rssMb}MB exceeds max ${RSS_MAX_MB}MB`);
+  // 2. worst-case wall <= wallMaxS (default 20 s)
+  const wallMax = variant.wallMaxS ?? WALL_MAX_S;
+  const rssMax = variant.rssMaxMb ?? RSS_MAX_MB;
+  if (!Number.isFinite(wallMax) || wallMax <= 0) reasons.push('invalid number: wallMaxS (must be > 0)');
+  else if (!Number.isFinite(variant.wallS)) reasons.push('missing number: wallS (worst-case wall time required)');
+  else if (variant.wallS > wallMax) reasons.push(`wall ${variant.wallS}s exceeds max ${wallMax}s${wallMax === WALL_MAX_S ? ' (3x headroom vs the 60s server budget)' : ' (variant wallMaxS)'}`);
+  // 3. RSS <= rssMaxMb (default 350 MB)
+  if (!Number.isFinite(rssMax) || rssMax <= 0) reasons.push('invalid number: rssMaxMb (must be > 0)');
+  else if (!Number.isFinite(variant.rssMb)) reasons.push('missing number: rssMb (worst-case RSS required)');
+  else if (variant.rssMb > rssMax) reasons.push(`RSS ${variant.rssMb}MB exceeds max ${rssMax}MB`);
 
   // 4. LICENSE byte-identical to starter (hash compare when a starter path is given)
   const licensePath = variant.licensePath || (variant.entryDir ? join(variant.entryDir, 'LICENSE') : null);
@@ -689,21 +834,30 @@ function printHelp() {
 Node 22 ESM, stdlib only. No npm install, no Python.
 
 Usage:
+  node tools/mf.mjs list [--json] [--all]
+      List open bounties (no API key needed). Follows next_cursor pagination
+      (max ${LIST_MAX_PAGES} pages) and hides bounties whose deadline has passed
+      unless --all is given. --json prints the filtered array as JSON.
   node tools/mf.mjs research <slug> [--fill <json|@file>] [--evidence <json|@file>] [--timebox <min>]
       Create/validate the Phase-0 research log (research/<slug>.json).
       Time-boxed best-effort: 0-result search evidence is accepted, so it never stalls.
-  node tools/mf.mjs poll <slug>
+  node tools/mf.mjs poll <slug> [--places <n>]
       Fetch the live leaderboard and append a cutoff line (with B/hour velocity)
-      to frontier/<slug>.jsonl. Fails loudly if the API is unreachable — never invents numbers.
+      to frontier/<slug>.jsonl. The cutoff is place n (default ${DEFAULT_PLACES} paid places),
+      clamped to the leaderboard length. Fails loudly if the API is unreachable —
+      never invents numbers.
   node tools/mf.mjs track <slug> <variant-json|@file>
-      Record a variant metric line. size_bytes is computed automatically
-      (mainBytes + 7) + (ownerJson ? 76 : 0). Rejects identical/cosmetic diffs
-      and entries missing numbers.
+      Record a variant metric line. size_bytes is computed automatically:
+      (mainBytes + entryPathBytes) + (ownerJson ? ownerJsonBytes : 0).
+      Defaults ${DEFAULT_ENTRY_PATH_BYTES} / ${DEFAULT_OWNER_JSON_BYTES} come from one size-coded bounty (main.ts);
+      set entryPathBytes / ownerJsonBytes in the variant JSON for other bounties.
+      Rejects identical/cosmetic diffs and entries missing numbers.
   node tools/mf.mjs gate <slug> <variant-json|@file> [--starter <path>] [--quota <path>]
       Deterministic pre-submit gate. Exit 0 pass / 1 fail with reasons.
       Checks: strictly-better than best-so-far (a tie is NOT better),
-      wall <= ${WALL_MAX_S}s, RSS <= ${RSS_MAX_MB}MB, LICENSE hash vs starter,
-      secret scan, quota.
+      wall <= ${WALL_MAX_S}s, RSS <= ${RSS_MAX_MB}MB (override with variant wallMaxS / rssMaxMb),
+      LICENSE hash vs starter, secret scan, quota. Honors entryPathBytes /
+      ownerJsonBytes like track.
   node tools/mf.mjs loop <slug> <config.json>
       Outer controller (state only, no LLM calls). Exit codes:
         0 = target reached (or continue with a next action printed as JSON)
@@ -723,12 +877,13 @@ export async function main(argv) {
   if (cmd === '--version') { console.log(`mf.mjs v${VERSION}`); return 0; }
   try {
     switch (cmd) {
+      case 'list': return await cmdList(rest);
       case 'research': return cmdResearch(root, rest);
       case 'poll': return await cmdPoll(root, rest);
       case 'track': return cmdTrack(root, rest);
       case 'gate': return cmdGate(root, rest);
       case 'loop': return cmdLoop(root, rest);
-      default: return fail(`unknown command: ${cmd}\nRun: node tools/mf.mjs --help`);
+      default: return fail(`unknown command: ${cmd}\nCommands: list | research | poll | track | gate | loop\nRun: node tools/mf.mjs --help`);
     }
   } catch (e) {
     console.error(`mf.mjs ${cmd} FAILED: ${e.message}`);
