@@ -1,1 +1,15 @@
-{"mcpServers":{"makefun":{"description":"make.fun MCP server (authenticated). Find bounties, track entries, claim rewards. API key goes in the MAKEFUN_API_KEY environment variable — never hardcode it in this file.","headers":{"x-api-key":"${MAKEFUN_API_KEY}"},"type":"http","url":"https://make.fun/mcp"},"makefun-public":{"description":"make.fun MCP server, read-only, no key needed. List open bounties and read their requirements.","type":"http","url":"https://make.fun/mcp/public"}}}
+{
+  "mcpServers": {
+    "makefun": {
+      "type": "http",
+      "url": "https://make.fun/mcp",
+      "headers": {
+        "x-api-key": "${MAKEFUN_API_KEY}"
+      }
+    },
+    "makefun-public": {
+      "type": "http",
+      "url": "https://make.fun/mcp/public"
+    }
+  }
+}

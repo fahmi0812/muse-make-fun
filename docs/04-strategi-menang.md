@@ -135,4 +135,4 @@ Jangan pakai skill yang tidak ada hubungannya dengan bounty. Skill yang salah ha
 5. Perbaiki dan submit ulang.
 6. Bukti otomatis, bukan klaim.
 
-Sumber: `references/skill-upstream-v1.5.253.md`, `keybot111/hire-your-first-ai-agent`, `Alanzcrew/emberfall`, `ZhenyuYangK/tiny-chess-bot`, `lacerta15/makefun-polymarket-nvidia-ceo-forecast-01`, `AIep5/make-fun-starter-guide`.
+Sumber: `references/skill-upstream-v1.5.259.md`, `keybot111/hire-your-first-ai-agent`, `Alanzcrew/emberfall`, `ZhenyuYangK/tiny-chess-bot`, `lacerta15/makefun-polymarket-nvidia-ceo-forecast-01`, `AIep5/make-fun-starter-guide`.

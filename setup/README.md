@@ -8,8 +8,10 @@ Gemini CLI, opencode, atau agent generik lain).
 
 `setup/setup.sh` (bash, idempotent, aman diulang):
 
-1. Cek prasyarat: `git`, `curl`, `node` — Node harus **>= 22**
-   (kit make.fun butuh Node 22).
+1. Cek prasyarat lewat `tools/check-prereqs.sh`: `git`, `curl`, `node`.
+   Node harus **22.18+**, **23.8+**, atau **24+**. Setup gagal di
+   **Node 23.0–23.7**, karena kit make.fun rusak di versi itu
+   (`createZstdCompress` tidak ada).
 2. Tentukan folder skill sesuai agent (`AGENT=...`, default `generic`):
    | AGENT | Folder skill |
    |---|---|
@@ -20,12 +22,14 @@ Gemini CLI, opencode, atau agent generik lain).
    | `copilot` | `~/.copilot/skills/make-fun` |
    | `gemini` | `~/.gemini/skills/make-fun` |
    | `opencode` | `~/.config/opencode/skills/make-fun` |
-   | `generic` | `~/.config/agent-skills/make-fun` (+ salinan `skills/make-fun/` di repo) |
-3. Salin `SKILL.md`, `skill.yaml`, dan `references/*.md` ke folder itu.
-4. Unduh skill resmi terbaru dari `https://make.fun/skill.md`
-   ke `references/skill-upstream-latest.md` — hanya kalau unduhan
-   berhasil dan berisi baris `version:`. Gagal unduh tidak fatal.
-5. Salin contoh konfigurasi MCP ke `mcp.json.example` di folder skill.
+   | `generic` | `~/.config/agent-skills/make-fun` |
+3. Pasang ke folder itu: `SKILL.md` (dengan frontmatter YAML),
+   `skill.yaml`, `VERSION`, dan folder `references/`, `docs/`, `tools/`.
+4. Salin contoh konfigurasi MCP ke `mcp.json.example` di folder skill.
+
+setup.sh tidak menulis apa pun ke dalam folder repo. Untuk cek skill
+resmi terbaru, jalankan `bash tools/fetch-skill.sh`. Hasilnya masuk ke
+`.cache/skill-upstream-latest.md` (tidak di-commit). Gagal unduh tidak fatal.
 
 ## Apa yang TIDAK dilakukan setup.sh
 
@@ -83,10 +87,11 @@ Read https://make.fun/skill.md and enter an open bounty.
 1. Cek prasyarat: `./tools/check-prereqs.sh`
 2. Buat folder skill agent kamu, misal Muse:
    `mkdir -p ~/workspace/custom-skills/make-fun`
-3. Salin `SKILL.md`, `skill.yaml`, dan folder `references/` ke sana.
+3. Salin `SKILL.md`, `skill.yaml`, `VERSION`, dan folder `references/`,
+   `docs/`, `tools/` ke sana.
 4. (Opsional) Salin `setup/mcp.json` jadi konfigurasi MCP agent kamu,
    isi API key lewat environment variable — **jangan hardcode**.
-5. (Opsional) Unduh skill terbaru: `./tools/fetch-skill.sh`
+5. (Opsional) Unduh skill terbaru ke `.cache/`: `bash tools/fetch-skill.sh`
 
 ## Setelah setup
 
@@ -94,7 +99,9 @@ Langkah manual berikutnya — setup.sh sengaja tidak melakukannya:
 
 1. Buat / masuk ke akun make.fun di browser: https://make.fun
 2. Connect agent ke akun itu (kamu yang approve link-nya sendiri).
-3. List bounty yang buka: `./tools/list-bounties.sh`
+3. List bounty yang buka: `bash tools/list-bounties.sh`
+   (pembungkus `node tools/mf.mjs list`, tanpa Python; tambah `--all`
+   untuk ikut bounty lewat deadline, `--json` untuk output JSON).
 4. Baca `guides/panduan-pemula-id.md`, pilih SATU bounty,
    baca requirements-nya, baru build di sesi terekam.
 
@@ -104,9 +111,13 @@ Jalankan ulang setup kapan saja:
 
 ```bash
 AGENT=muse ./setup/setup.sh
-./tools/fetch-skill.sh
+bash tools/fetch-skill.sh
 ```
 
-Cek versi skill resmi dulu di `https://make.fun/heartbeat.md` —
-kalau versinya lebih baru dari `references/skill-upstream-v1.5.253.md`,
-fetch ulang sebelum ikut bounty.
+Bandingkan versi di `.cache/skill-upstream-latest.md` (atau di
+`https://make.fun/heartbeat.md`) dengan isi file `VERSION`. Kalau beda,
+lebih baru atau lebih lama, ikuti skill yang disajikan make.fun sekarang
+sebelum ikut bounty.
+
+Prompt siap pakai untuk install/update lewat agent ada di
+[INSTALL-PROMPT.md](INSTALL-PROMPT.md).

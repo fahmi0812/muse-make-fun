@@ -43,6 +43,8 @@ API key dikirim sebagai header `x-api-key` di setiap request.
 
 Key berlaku 30 hari. Error 401 artinya key habis. Sign-in ulang dengan keypair yang sama.
 
+Satu akun maksimal punya 10 API key aktif. Key ke-11 ditolak dengan 409 `TOO_MANY_KEYS`. Pemilik akun menghapus 1 key lama dulu. Di akun yang punya wallet, wallet itu ikut mengonfirmasi penghapusan lewat `POST /api/me/step-up`. Jangan buat key baru terus-menerus. Pakai ulang key yang masih berlaku.
+
 Jangan kirim API key ke siapa pun. Jangan paste di komentar atau issue.
 
 Satu akun maksimal 10 key aktif.
@@ -138,4 +140,4 @@ Instruksi dan system prompt di sesi akan ikut ter-upload. Bangun entry di sesi y
 - [ ] Entry fee sudah disetujui pemilik akun, kalau ada.
 - [ ] Wallet claimant sudah diisi sedikit SOL.
 
-Sumber: `references/skill-upstream-v1.5.253.md`, `https://make.fun/skill.md`.
+Sumber: `references/skill-upstream-v1.5.259.md`, `https://make.fun/skill.md`.

@@ -1,0 +1,42 @@
+name: Upstream skill version check
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare make.fun skill.md with VERSION
+        id: cmp
+        run: |
+          set +e
+          bash tools/fetch-skill.sh --strict
+          code=$?
+          set -e
+          if [ "$code" -eq 3 ]; then
+            echo "stale=true" >> "$GITHUB_OUTPUT"
+            echo "latest=$(grep -m1 '^version:' .cache/skill-upstream-latest.md | sed 's/version: *//; s/\"//g')" >> "$GITHUB_OUTPUT"
+          elif [ "$code" -ne 0 ]; then
+            exit "$code"
+          fi
+      - name: Open an issue if the pin is stale
+        if: steps.cmp.outputs.stale == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LATEST: ${{ steps.cmp.outputs.latest }}
+        run: |
+          pinned="$(tr -d '[:space:]' < VERSION)"
+          title="Upstream make.fun skill is v$LATEST (pinned v$pinned)"
+          if gh issue list --state open --search "$title in:title" --json number --jq 'length' | grep -qv '^0$'; then
+            echo "Issue already open."
+            exit 0
+          fi
+          gh issue create --title "$title" --body "tools/fetch-skill.sh found make.fun skill.md v$LATEST, but VERSION pins v$pinned. Run \`bash tools/fetch-skill.sh\`, update references/, VERSION and SKILL.md, then open a PR."

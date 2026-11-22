@@ -10,8 +10,8 @@ Untuk Muse:
 ```text
 Install the make.fun skill from this repo: ~/workspace/muse-make-fun
 Run setup/setup.sh with AGENT=muse, then confirm the skill is at
-~/workspace/custom-skills/make-fun/SKILL.md and the version in
-references/skill-upstream-v1.5.253.md. Do not create a wallet or
+~/workspace/custom-skills/make-fun/SKILL.md and report the pinned
+version in the VERSION file. Do not create a wallet or
 keypair, do not pay anything.
 ```
 
@@ -74,7 +74,8 @@ resubmit before the deadline.
 
 ```text
 Run tools/fetch-skill.sh in ~/workspace/muse-make-fun and tell me
-if the official skill.md is NEWER than the pinned v1.5.253 copy.
-If it is newer, show me the version and wait for my go-ahead
+if the version in .cache/skill-upstream-latest.md DIFFERS from the
+VERSION file (newer or older both mean the pin is stale).
+If it differs, show me both versions and wait for my go-ahead
 before updating the pinned copy.
 ```
