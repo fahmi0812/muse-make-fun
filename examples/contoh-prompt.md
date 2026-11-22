@@ -51,15 +51,23 @@ and prerequisites I already meet. Show the slug, reward, deadline,
 and the prerequisites check before building anything.
 ```
 
-## (d) Perbaiki dan submit ulang
+## (d) Riset dulu, lalu iterasi sampai plateau (ganti prompt lama)
+
+> Catatan: prompt (d) lama ("fix ONLY what the checks name") dihapus karena melarang agent mencari perbaikan yang tidak disebutkan cek — itu mengkodifikasi satisficing.
 
 ```text
 My make.fun entry for <SLUG_BOUNTY> was rejected / failed a check.
-Read the entry status and the failed checks with their fix messages
-(GET /api/submissions/<SUBMISSION_ID>/status), fix ONLY what the
-checks name, run grade-local again until it passes, then bundle the
-transcripts and resubmit before the deadline. Do not change anything
-unrelated.
+First, research: read the live leaderboard, the winning entries' repos,
+and the bounty RULES.txt; write down what the winners do that mine does
+not, and the theoretical floor for my metric (score, size, or time).
+Then iterate: fix the failed checks AND search for improvements the
+checks did not name — try at least 3 different approaches, keep only
+the variant that beats my best-so-far on the local grader, and record
+each attempt (variant, score, size, time) in a frontier log.
+Stop only when the score/size stops improving for 5 straight attempts,
+the time/iteration budget is spent, or the deadline buffer is reached.
+Then run grade-local until it passes, bundle the transcripts, and
+resubmit before the deadline.
 ```
 
 ## (e) Cek versi skill dulu

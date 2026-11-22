@@ -122,6 +122,16 @@ if curl -fsSL --max-time 30 "https://make.fun/skill.md" -o "$LATEST.tmp" 2>/dev/
     echo "Saved: references/skill-upstream-latest.md"
     echo "Version: $(grep -m1 '^version:' "$LATEST")"
     cp "$LATEST" "$DEST/references/skill-upstream-latest.md" 2>/dev/null || true
+    # Reconciliation warning: the wrapper SKILL.md is pinned to a fixed
+    # upstream version; if upstream moved, the wrapper may be stale.
+    # Warn only — never auto-edit the pinned copy or SKILL.md here.
+    pinned_version="$(grep -m1 '^version:' "$REPO_DIR/references/skill-upstream-v1.5.236.md" 2>/dev/null | sed 's/version: *//; s/"//g' || echo unknown)"
+    latest_version="$(grep -m1 '^version:' "$LATEST" | sed 's/version: *//; s/"//g')"
+    if [ "$latest_version" != "$pinned_version" ]; then
+      echo "WARNING: latest skill.md ($latest_version) differs from the pinned copy ($pinned_version)."
+      echo "WARNING: the wrapper SKILL.md may be stale — review the diff before relying on it."
+      echo "WARNING: nothing was auto-edited; update the pinned copy and SKILL.md manually."
+    fi
   else
     rm -f "$LATEST.tmp"
     echo "WARN: download did not look like skill.md — kept existing copy."
