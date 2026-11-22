@@ -16,7 +16,12 @@ recordings.json
 
 # Bounty kits (downloaded per bounty, re-downloadable)
 *-kit/
-*kit/
+
+# Local state written by tools (latest upstream skill, Exhaustion Loop logs)
+.cache/
+frontier/
+research/
+loop-config.json
 
 # Dependencies & build
 node_modules/

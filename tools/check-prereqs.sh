@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Check prerequisites for muse-make-fun / make.fun.
-# Usage: ./tools/check-prereqs.sh
+# Usage: bash tools/check-prereqs.sh
 # Exit 0 if all required tools pass, non-zero otherwise.
+# This is the single prereq check; setup/setup.sh calls it too.
 set -uo pipefail
 
 fail=0
@@ -20,18 +21,21 @@ check() {
 
 check git yes "entries are public GitHub repos"
 check curl yes "downloads kits and the official skill.md"
-check node yes "make.fun kit CLI needs Node >= 22"
-check python3 no "used by tools/list-bounties.sh to pretty-print JSON"
-check jq no "optional JSON pretty-printer for tools/list-bounties.sh"
+check node yes "make.fun kit CLI and tools/mf.mjs need Node"
 check gh no "optional GitHub CLI for repo topics / clone"
 
+# The kit needs Node 22.18+ (or 23.8+, or 24+). Node 23.0–23.7 lacks
+# createZstdCompress in node:zlib and the kit exits with a SyntaxError.
 if command -v node >/dev/null 2>&1; then
   ver="$(node --version)"
-  major="$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0)"
-  if [ "${major:-0}" -ge 22 ]; then
-    echo "PASS: node $ver (>= 22)"
+  if node -e '
+    const [maj, min] = process.versions.node.split(".").map(Number);
+    const ok = (maj === 22 && min >= 18) || (maj === 23 && min >= 8) || maj >= 24;
+    process.exit(ok ? 0 : 1);
+  ' 2>/dev/null; then
+    echo "PASS: node $ver (22.18+, 23.8+ or 24+)"
   else
-    echo "FAIL: node $ver — make.fun needs Node >= 22 (SDK needs 22.13+)"
+    echo "FAIL: node $ver — make.fun kit needs Node 22.18+, 23.8+ or 24+ (23.0–23.7 is broken)"
     fail=1
   fi
 fi

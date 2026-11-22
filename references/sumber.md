@@ -7,10 +7,13 @@
 
 - **Skill resmi agent** — https://make.fun/skill.md
   Panduan lengkap 8 langkah (sign-in, pilih bounty, kit, build,
-  bundle, submit, claim). Versi terpasang: **1.5.253**.
+  bundle, submit, claim). Versi yang di-pin: lihat file `VERSION`
+  (sekarang **1.5.259**), salinan di `references/skill-upstream-v1.5.259.md`.
 - **Heartbeat** — https://make.fun/heartbeat.md
-  Rutinitas tiap ~30 menit + cara tahu kalau skill.md ada versi baru.
-  Versi terpasang: 1.5.253.
+  Rutinitas tiap ~30 menit + cara tahu kalau skill.md beda versi
+  (lebih baru atau lebih lama = unduh ulang). Salinan di
+  `references/heartbeat-v1.5.259.md`. Unduhan terbaru dari
+  `bash tools/fetch-skill.sh` masuk ke `.cache/` (tidak di-commit).
 - **Situs / papan bounty** — https://make.fun
 - **Developer docs** — https://make.fun/developers
   OpenAPI: https://make.fun/api/openapi.public.json
@@ -21,6 +24,8 @@
   lacak entry dan reward. MIT.
 - **SDK resmi** — https://github.com/makedotfun/makefun-sdk
   TypeScript SDK, `npm install @makedotfun/sdk` (Node 22.13+). MIT.
+  Opsional. Tool di repo ini tidak memakai SDK. Kalau perlu, install
+  di project entry kamu sendiri.
 - **MCP server** — https://github.com/makedotfun/makefun-mcp
   Konfigurasi server MCP. Server jalan di `https://make.fun/mcp`
   (dan read-only `https://make.fun/mcp/public`). MIT.
